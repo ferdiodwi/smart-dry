@@ -8,8 +8,6 @@
 
 Sebuah sistem jemuran pakaian otomatis berbasis IoT yang dapat menarik jemuran secara mandiri saat terdeteksi hujan dan mengeluarkannya kembali saat cuaca kembali cerah. Dilengkapi dengan dashboard web modern untuk monitoring dan kontrol manual.
 
-![Dashboard Aplikasi](https://i.ibb.co/L5YwYyV/smartdry-dashboard.png)
-*(Tips: Ganti URL gambar di atas dengan screenshot aplikasi Anda sendiri setelah berjalan)*
 
 ---
 
@@ -23,33 +21,6 @@ Sebuah sistem jemuran pakaian otomatis berbasis IoT yang dapat menarik jemuran s
 - **📈 Statistik**: Lihat ringkasan data seperti jumlah record dan deteksi cuaca hari ini (fitur dari API `/stats`).
 - **📱 Desain Responsif**: Tampilan dapat diakses dengan baik melalui perangkat desktop maupun mobile.
 
----
-
-## 🏗️ Arsitektur Sistem
-
-Sistem ini terdiri dari beberapa komponen utama yang saling berkomunikasi untuk menciptakan sistem yang cerdas dan otomatis.
-
-```mermaid
-graph TD
-    subgraph "Perangkat Keras"
-        A[Sensor Hujan] --> B(Mikrokontroler <br> Arduino UNO);
-        M[Motor DC & Driver] <--> B;
-    end
-
-    subgraph "Perangkat Lunak"
-        B -- "Kirim Status via Serial" --> C{Backend Server <br> (Flask + Python)};
-        C <--> D[Database <br> (PostgreSQL)];
-        C -- "Sajikan Data & Kontrol" --> F[Frontend <br> (Web Browser)];
-    end
-
-    subgraph "Pengguna"
-         E[Pengguna] <--> F;
-    end
-
-    style B fill:#00979D,stroke:#fff,stroke-width:2px,color:#fff
-    style C fill:#333,stroke:#fff,stroke-width:2px,color:#fff
-    style D fill:#32658C,stroke:#fff,stroke-width:2px,color:#fff
-```
 
 ---
 
