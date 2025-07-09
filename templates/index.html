@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontrol Jemuran Otomatis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: headerPattern 20s linear infinite;
+        }
+
+        @keyframes headerPattern {
+            0% { transform: translateX(-50px) translateY(-50px); }
+            100% { transform: translateX(0px) translateY(0px); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-display {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .status-auto {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status-manual {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: #333;
+        }
+
+        .jemuran-animation {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .weather-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transition: all 1s ease;
+        }
+
+        .weather-bg.sunny {
+            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+        }
+
+        .weather-bg.rainy {
+            background: linear-gradient(to bottom, #2C3E50 0%, #34495E 100%);
+        }
+
+        .sun {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            transition: opacity 1s ease;
+            animation: rotate 10s linear infinite;
+        }
+
+        .sun::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: 
+                radial-gradient(2px 2px at 20px 30px, #FFD700, transparent),
+                radial-gradient(2px 2px at 40px 70px, #FFD700, transparent),
+                radial-gradient(1px 1px at 90px 40px, #FFD700, transparent),
+                radial-gradient(1px 1px at 130px 80px, #FFD700, transparent),
+                radial-gradient(2px 2px at 160px 30px, #FFD700, transparent);
+            border-radius: 50%;
+            animation: sparkle 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(transparent 0%, transparent 5%, rgba(255,255,255,0.6) 5%, rgba(255,255,255,0.6) 10%, transparent 10%),
+                linear-gradient(transparent 0%, transparent 25%, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0.4) 30%, transparent 30%),
+                linear-gradient(transparent 0%, transparent 50%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.6) 55%, transparent 55%),
+                linear-gradient(transparent 0%, transparent 75%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.4) 80%, transparent 80%);
+            background-size: 25px 100px, 35px 100px, 45px 100px, 55px 100px;
+            background-position: 0px 0px, 15px 0px, 30px 0px, 45px 0px;
+            animation: rain 0.8s linear infinite;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .rain.active {
+            opacity: 1;
+        }
+
+        @keyframes rain {
+            0% { background-position: 0px 0px, 15px 0px, 30px 0px, 45px 0px; }
+            100% { background-position: 0px 100px, 15px 100px, 30px 100px, 45px 100px; }
+        }
+
+        .clothesline {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #8B4513;
+            transform: translateY(-50%);
+        }
+
+        .clothesline::before,
+        .clothesline::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            width: 2px;
+            height: 20px;
+            background: #8B4513;
+        }
+
+        .clothesline::before { left: 0; }
+        .clothesline::after { right: 0; }
+
+        .clothes {
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            transform: translateY(-50%) scale(1);
+            transform-origin: left center;
+            transition: left 1s ease-in-out, transform 1s ease-in-out;
+        }
+
+        .clothes.retracted {
+            left: calc(85% - 40px);
+            transform: translateY(-50%) scale(0.3);
+        }
+
+        .shirt {
+            width: 40px;
+            height: 50px;
+            background: #FF6B6B;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            margin-right: 10px;
+            display: inline-block;
+            animation: clothesWave 2s ease-in-out infinite;
+        }
+
+        .shirt:nth-child(2) {
+            background: #4ECDC4;
+            animation-delay: 0.5s;
+        }
+
+        .shirt:nth-child(3) {
+            background: #45B7D1;
+            animation-delay: 1s;
+        }
+
+        @keyframes clothesWave {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .motor-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .motor-indicator.active {
+            background: #28a745;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            margin: 5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-auto {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .btn-manual {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+
+        .btn-on {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+
+        .btn-off {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .log-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .select-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox.checked {
+            background: #667eea;
+        }
+
+        .custom-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        tr.selected td {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-hujan {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .status-cerah {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 15px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+            border: 1px solid rgba(23, 162, 184, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cloud-sun"></i> Jemuran Otomatis</h1>
+            <p>Sistem Kontrol Cerdas untuk Jemuran Pakaian</p>
+        </div>
+
+        <div class="main-content">
+            <div class="grid">
+                <div class="card">
+                    <h2><i class="fas fa-cogs"></i> Status & Kontrol</h2>
+                    <div class="status-display" id="status-display">
+                        <div class="loading"></div> Memuat status...
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="btn-auto" class="btn btn-auto" onclick="setMode('AUTO')">
+                            <i class="fas fa-magic"></i> Mode Otomatis
+                        </button>
+                        <button id="btn-manual" class="btn btn-manual" onclick="setMode('MANUAL')">
+                            <i class="fas fa-hand-paper"></i> Mode Manual
+                        </button>
+                    </div>
+
+                    <div id="manual-controls" class="controls hidden">
+                        <button class="btn btn-on" onclick="sendAction('ON')">
+                            <i class="fas fa-play"></i> Tarik Jemuran
+                        </button>
+                        <button class="btn btn-off" onclick="sendAction('OFF')">
+                            <i class="fas fa-stop"></i> Hentikan Motor
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-eye"></i> Visualisasi Jemuran</h2>
+                    <div class="jemuran-animation">
+                        <div class="weather-bg sunny" id="weather-bg">
+                            <div class="sun" id="sun"></div>
+                            <div class="rain" id="rain"></div>
+                        </div>
+                        <div class="clothesline"></div>
+                        <div class="clothes" id="clothes">
+                            <div class="shirt"></div>
+                            <div class="shirt"></div>
+                            <div class="shirt"></div>
+                        </div>
+                        <div class="motor-indicator" id="motor-indicator">Motor: OFF</div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        Animasi menunjukkan kondisi cuaca dan posisi jemuran secara real-time
+                    </div>
+                </div>
+            </div>
+
+            <div class="log-section">
+                <div class="log-controls">
+                    <h2><i class="fas fa-list"></i> Log Sensor Hujan</h2>
+                    <div class="select-controls">
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" id="select-all" onclick="toggleSelectAll()"></div>
+                            <label>Pilih Semua</label>
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="deleteSelected()">
+                            <i class="fas fa-trash"></i> Hapus Terpilih
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteAll()">
+                            <i class="fas fa-trash-alt"></i> Hapus Semua
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="log-table">
+                        <thead>
+                            <tr>
+                                <th width="50">
+                                    <div class="checkbox-container">
+                                        <div class="custom-checkbox" id="header-checkbox" onclick="toggleSelectAll()"></div>
+                                    </div>
+                                </th>
+                                <th>Waktu</th>
+                                <th>Status Cuaca</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px;">
+                                    <div class="loading"></div> Memuat data log...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000';
+        let selectedLogs = new Set();
+        let currentWeather = 'sunny';
+        let motorActive = false;
+
+        // Fungsi untuk mengatur mode (AUTO/MANUAL)
+        async function setMode(mode) {
+            try {
+                const response = await fetch(`${API_URL}/control`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode })
+                });
+                await response.json();
+                updateStatus();
+                showNotification(`Mode berhasil diubah ke ${mode}`, 'success');
+            } catch (error) {
+                console.error('Error setting mode:', error);
+                showNotification('Gagal mengubah mode', 'error');
+            }
+        }
+
+        // Fungsi untuk mengirim aksi manual (ON/OFF)
+        async function sendAction(action) {
+            try {
+                await fetch(`${API_URL}/control`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action })
+                });
+                motorActive = action === 'ON';
+                updateMotorIndicator();
+                showNotification(`Motor ${action === 'ON' ? 'dinyalakan' : 'dimatikan'}`, 'success');
+            } catch (error) {
+                console.error('Error sending action:', error);
+                showNotification('Gagal mengirim perintah', 'error');
+            }
+        }
+
+        // Fungsi untuk toggle select all
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('select-all');
+            const headerCheckbox = document.getElementById('header-checkbox');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            
+            const isChecked = selectAllCheckbox.classList.contains('checked');
+            
+            if (isChecked) {
+                selectAllCheckbox.classList.remove('checked');
+                headerCheckbox.classList.remove('checked');
+                selectedLogs.clear();
+                checkboxes.forEach(cb => {
+                    cb.classList.remove('checked');
+                    cb.closest('tr').classList.remove('selected');
+                });
+            } else {
+                selectAllCheckbox.classList.add('checked');
+                headerCheckbox.classList.add('checked');
+                checkboxes.forEach(cb => {
+                    cb.classList.add('checked');
+                    cb.closest('tr').classList.add('selected');
+                    selectedLogs.add(parseInt(cb.dataset.id));
+                });
+            }
+        }
+
+        // Fungsi untuk toggle select individual
+        function toggleSelect(id) {
+            const checkbox = document.querySelector(`[data-id="${id}"]`);
+            const row = checkbox.closest('tr');
+            
+            if (selectedLogs.has(id)) {
+                selectedLogs.delete(id);
+                checkbox.classList.remove('checked');
+                row.classList.remove('selected');
+            } else {
+                selectedLogs.add(id);
+                checkbox.classList.add('checked');
+                row.classList.add('selected');
+            }
+            
+            updateSelectAllState();
+        }
+
+        // Update state select all berdasarkan item yang dipilih
+        function updateSelectAllState() {
+            const selectAllCheckbox = document.getElementById('select-all');
+            const headerCheckbox = document.getElementById('header-checkbox');
+            const totalCheckboxes = document.querySelectorAll('.row-checkbox').length;
+            
+            if (totalCheckboxes > 0 && selectedLogs.size === totalCheckboxes) {
+                selectAllCheckbox.classList.add('checked');
+                headerCheckbox.classList.add('checked');
+            } else {
+                selectAllCheckbox.classList.remove('checked');
+                headerCheckbox.classList.remove('checked');
+            }
+        }
+
+        // =====================================================================
+        // --- FUNGSI HAPUS YANG DIPERBAIKI ---
+        // =====================================================================
+
+        /**
+         * [DIPERBAIKI] Menghapus semua data yang dipilih dengan satu panggilan API.
+         */
+        async function deleteSelected() {
+            if (selectedLogs.size === 0) {
+                showNotification('Tidak ada data yang dipilih', 'warning');
+                return;
+            }
+
+            if (!confirm(`Yakin ingin menghapus ${selectedLogs.size} data yang dipilih?`)) return;
+
+            // Mengubah Set menjadi Array untuk dikirim sebagai JSON
+            const idsToDelete = Array.from(selectedLogs);
+
+            try {
+                // Mengirim SATU permintaan ke endpoint /delete_multiple
+                const response = await fetch(`${API_URL}/delete_multiple`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: idsToDelete })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    selectedLogs.clear();
+                    fetchLogs(); // Muat ulang data setelah berhasil
+                    showNotification(`${result.deleted_count} data berhasil dihapus`, 'success');
+                } else {
+                    throw new Error(result.message || 'Gagal menghapus data');
+                }
+            } catch (error) {
+                console.error('Error deleting selected data:', error);
+                showNotification(error.message, 'error');
+            }
+        }
+
+        /**
+         * [DIPERBAIKI] Menghapus semua data log dengan satu panggilan API.
+         */
+        async function deleteAll() {
+            if (!confirm('YAKIN ingin menghapus SEMUA data log? Tindakan ini tidak dapat dibatalkan!')) return;
+
+            try {
+                // Langsung mengirim SATU permintaan ke endpoint /delete_all
+                const response = await fetch(`${API_URL}/delete_all`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    selectedLogs.clear(); // Bersihkan juga set pilihan
+                    fetchLogs(); // Muat ulang data (akan menampilkan tabel kosong)
+                    showNotification(result.message, 'success');
+                } else {
+                    throw new Error(result.message || 'Gagal menghapus semua data');
+                }
+            } catch (error) {
+                console.error('Error deleting all data:', error);
+                showNotification(error.message, 'error');
+            }
+        }
+        
+        // =====================================================================
+        // --- AKHIR BAGIAN YANG DIPERBAIKI ---
+        // =====================================================================
+
+        // Fungsi untuk menghapus data individual (tidak berubah, sudah efisien)
+        async function deleteData(id) {
+            if (!confirm(`Yakin ingin menghapus log ID ${id}?`)) return;
+            try {
+                await fetch(`${API_URL}/delete_data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                selectedLogs.delete(id);
+                fetchLogs();
+                showNotification(`Data ID ${id} berhasil dihapus`, 'success');
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                showNotification('Gagal menghapus data', 'error');
+            }
+        }
+
+        // Fungsi untuk memuat data log dari server
+        async function fetchLogs() {
+            try {
+                const response = await fetch(`${API_URL}/data`);
+                const logs = await response.json();
+                const tableBody = document.querySelector('#log-table tbody');
+                
+                if (logs.error) {
+                    throw new Error(logs.error);
+                }
+                
+                if (logs.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px; color: #666;">
+                                <i class="fas fa-inbox"></i> Belum ada data log
+                            </td>
+                        </tr>
+                    `;
+                    updateSelectAllState();
+                    updateWeatherAnimation([]); 
+                    return;
+                }
+                
+                tableBody.innerHTML = '';
+                logs.forEach(log => {
+                    const isSelected = selectedLogs.has(log[0]);
+                    const row = document.createElement('tr');
+                    if (isSelected) row.classList.add('selected');
+                    row.classList.add('fade-in');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="custom-checkbox row-checkbox ${isSelected ? 'checked' : ''}" 
+                                 data-id="${log[0]}" onclick="toggleSelect(${log[0]})"></div>
+                        </td>
+                        <td><i class="far fa-clock"></i> ${log[1]}</td>
+                        <td>
+                            <span class="status-badge ${log[2] ? 'status-hujan' : 'status-cerah'}">
+                                <i class="fas ${log[2] ? 'fa-cloud-showers-heavy' : 'fa-sun'}"></i>
+                                ${log[2] ? 'HUJAN' : 'CERAH'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger btn-small" onclick="deleteData(${log[0]})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                updateSelectAllState();
+                updateWeatherAnimation(logs);
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+                document.querySelector('#log-table tbody').innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px; color: #dc3545;">
+                            <i class="fas fa-exclamation-triangle"></i> Gagal memuat data: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Fungsi untuk mengupdate animasi cuaca
+        function updateWeatherAnimation(logs) {
+            const weatherBg = document.getElementById('weather-bg');
+            const sun = document.getElementById('sun');
+            const rain = document.getElementById('rain');
+            const clothes = document.getElementById('clothes');
+            
+            let isRaining = false;
+            if (logs.length > 0) {
+                const latestLog = logs[0];
+                isRaining = latestLog[2];
+            }
+
+            const newWeather = isRaining ? 'rainy' : 'sunny';
+
+            if (currentWeather !== newWeather) {
+                currentWeather = newWeather;
+                if (isRaining) {
+                    weatherBg.className = 'weather-bg rainy';
+                    sun.style.opacity = '0';
+                    rain.classList.add('active');
+                    clothes.classList.add('retracted');
+                } else {
+                    weatherBg.className = 'weather-bg sunny';
+                    sun.style.opacity = '1';
+                    rain.classList.remove('active');
+                    clothes.classList.remove('retracted');
+                }
+            }
+        }
+
+        // Fungsi untuk mengupdate status dan kontrol
+        async function updateStatus() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                const status = await response.json();
+                const mode = status.mode;
+                
+                const statusDisplay = document.getElementById('status-display');
+                const manualControls = document.getElementById('manual-controls');
+                
+                statusDisplay.innerHTML = `
+                    <i class="fas ${mode === 'AUTO' ? 'fa-robot' : 'fa-hand-paper'}"></i>
+                    Mode: ${mode === 'AUTO' ? 'OTOMATIS' : 'MANUAL'}
+                `;
+                statusDisplay.className = `status-display ${mode === 'AUTO' ? 'status-auto' : 'status-manual'}`;
+                
+                document.getElementById('btn-auto').disabled = (mode === 'AUTO');
+                document.getElementById('btn-manual').disabled = (mode === 'MANUAL');
+
+                if (mode === 'MANUAL') {
+                    manualControls.classList.remove('hidden');
+                } else {
+                    manualControls.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error);
+                document.getElementById('status-display').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i> Error memuat status
+                `;
+            }
+        }
+
+        // Fungsi untuk mengupdate indikator motor
+        function updateMotorIndicator() {
+            const motorIndicator = document.getElementById('motor-indicator');
+            if (motorActive) {
+                motorIndicator.textContent = 'Motor: ON';
+                motorIndicator.classList.add('active');
+            } else {
+                motorIndicator.textContent = 'Motor: OFF';
+                motorIndicator.classList.remove('active');
+            }
+        }
+
+        // Fungsi untuk menampilkan notifikasi
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                              type === 'error' ? 'fa-times-circle' : 
+                              type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : 
+                            type === 'error' ? '#dc3545' : 
+                            type === 'warning' ? '#ffc107' : '#17a2b8'};
+                color: ${type === 'warning' ? '#333' : 'white'};
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                font-weight: 500;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(notificationStyles);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus();
+            fetchLogs();
+            updateMotorIndicator();
+            
+            setInterval(fetchLogs, 5000);
+            setInterval(updateStatus, 2000);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                toggleSelectAll();
+            }
+            if (e.key === 'Delete' && selectedLogs.size > 0) {
+                deleteSelected();
+            }
+        });
+    </script>
+</body>
+</html>
